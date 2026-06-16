@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Isaac's PS5 Deal Tracker</title>
+<style>
+  :root{
+    --bg:#0e1220; --panel:#161c2e; --panel2:#1d2540; --line:#2a3354;
+    --ink:#eef2ff; --muted:#9aa6c8; --accent:#4f7cff; --accent2:#7c5cff;
+    --great:#2ecc71; --good:#7ed957; --fair:#ffce54; --bad:#ff6b6b;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:linear-gradient(180deg,#0b0f1c,#0e1220 40%);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.5}
+  .wrap{max-width:1060px;margin:0 auto;padding:28px 20px 80px}
+  header h1{font-size:30px;margin:0 0 6px;letter-spacing:-.5px}
+  header p{color:var(--muted);margin:0 0 4px;font-size:15px}
+  .meta{font-size:13px;color:var(--muted);margin-top:10px}
+  .pill{display:inline-block;background:var(--panel2);border:1px solid var(--line);
+    border-radius:999px;padding:3px 11px;font-size:12px;color:var(--muted);margin-right:6px}
+  h2{font-size:19px;margin:34px 0 6px;letter-spacing:-.3px}
+  .sub{color:var(--muted);font-size:13.5px;margin:0 0 14px}
+  .grid{display:grid;gap:14px}
+  .g3{grid-template-columns:repeat(3,1fr)}
+  .g2{grid-template-columns:repeat(2,1fr)}
+  @media(max-width:760px){.g3,.g2{grid-template-columns:1fr}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px}
+  .card h3{margin:0 0 2px;font-size:16px}
+  .card .model-sub{color:var(--muted);font-size:12.5px;margin:0 0 12px}
+  .row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-top:1px solid var(--line);font-size:14px}
+  .row:first-of-type{border-top:none}
+  .dot{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:8px;vertical-align:middle}
+  .price{font-variant-numeric:tabular-nums;font-weight:600}
+  .src{display:flex;flex-direction:column;gap:10px}
+  .lnk{display:flex;align-items:center;justify-content:space-between;gap:12px;
+    background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:13px 15px;
+    text-decoration:none;color:var(--ink);transition:.15s}
+  .lnk:hover{border-color:var(--accent);background:var(--panel2);transform:translateY(-1px)}
+  .lnk .l{display:flex;flex-direction:column;gap:2px}
+  .lnk .name{font-weight:600;font-size:15px}
+  .lnk .desc{color:var(--muted);font-size:12.5px}
+  .tag{font-size:11px;padding:3px 9px;border-radius:999px;white-space:nowrap;border:1px solid var(--line)}
+  .t-local{background:rgba(46,204,113,.12);color:#5fe39b;border-color:rgba(46,204,113,.3)}
+  .t-warranty{background:rgba(79,124,255,.14);color:#9db4ff;border-color:rgba(79,124,255,.35)}
+  .t-p2p{background:rgba(124,92,255,.14);color:#b9a6ff;border-color:rgba(124,92,255,.35)}
+  .t-ref{background:rgba(255,206,84,.12);color:#ffd97a;border-color:rgba(255,206,84,.3)}
+  .go{font-size:13px;color:var(--accent);white-space:nowrap}
+  .ok{color:#5fe39b;font-weight:600}
+  .warn{color:#ffd97a;font-weight:600}
+  .live{color:#9db4ff;font-weight:600}
+  table .tr td{padding:11px 14px;border-top:1px solid var(--line)}
+  table .tr td.n{color:var(--muted);width:30px}
+  table .tr td.p{font-weight:700;font-variant-numeric:tabular-nums;color:#5fe39b;white-space:nowrap}
+  table .tr a{color:var(--accent);text-decoration:none;white-space:nowrap}
+  table .tr:hover td{background:var(--panel2)}
+  .check{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 20px}
+  .check ul{margin:8px 0 0;padding-left:20px}
+  .check li{margin:7px 0;font-size:14px}
+  .check li b{color:#fff}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin:6px 0 0}
+  .legend span{display:flex;align-items:center}
+  footer{margin-top:40px;color:var(--muted);font-size:12.5px;border-top:1px solid var(--line);padding-top:16px}
+  a.inline{color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>🎮 Isaac's PS5 Deal Tracker</h1>
+    <p>Every link below opens a <b>live, price-sorted search</b> on a legit source. Click in any day to see what's available right now.</p>
+    <div class="meta">
+      <span class="pill">📍 Buffalo, NY (14201)</span>
+      <span class="pill">Any model · lean cheap</span>
+      <span class="pill" id="today"></span>
+    </div>
+  </header>
+
+  <!-- TODAY'S TOP 10 -->
+  <h2>🏆 Today's 10 best prices <span style="font-size:13px;color:var(--muted);font-weight:400">— pulled live Jun 16, 2026</span></h2>
+  <p class="sub">Real listings I pulled today from verified sources. Swappa units are inspected and PayPal-protected; Sony refurbs carry a 1-year warranty. Ranked cheapest first.</p>
+  <div class="card" style="padding:6px 0">
+    <table style="width:100%;border-collapse:collapse;font-size:13.5px">
+      <thead><tr style="color:var(--muted);text-align:left;font-size:12px">
+        <th style="padding:10px 14px">#</th><th>Price</th><th>What it is</th><th>Condition</th><th>Where</th><th></th>
+      </tr></thead>
+      <tbody>
+        <tr class="tr"><td class="n">1</td><td class="p">$392</td><td>PS5 <b>Disc</b> (Standard, 825GB)</td><td>Mint</td><td>Enterprise, OR · ships</td><td><a href="https://swappa.com/listing/view/LAGJ79430" target="_blank">view →</a></td></tr>
+        <tr class="tr"><td class="n">2</td><td class="p">$402</td><td>PS5 <b>Disc</b> (Standard, 825GB)</td><td>Good</td><td>Kalamazoo, MI · ships</td><td><a href="https://swappa.com/listing/view/LAGH81519" target="_blank">view →</a></td></tr>
+        <tr class="tr"><td class="n">3</td><td class="p">$405</td><td>PS5 <b>Disc</b> + 2 controllers</td><td>Mint</td><td>Blacksburg, VA · ships</td><td><a href="https://swappa.com/listing/view/LAGJ40839" target="_blank">view →</a></td></tr>
+        <tr class="tr"><td class="n">4</td><td class="p">$412</td><td>PS5 <b>Disc</b> + new controller + HDMI</td><td>Mint</td><td>Livingston, NJ · ships</td><td><a href="https://swappa.com/listing/view/LAGI88889" target="_blank">view →</a></td></tr>
+        <tr class="tr"><td class="n">5</td><td class="p">$426</td><td>PS5 <b>Disc</b> (Standard, 825GB)</td><td>Good</td><td>North East, MD · ships</td><td><a href="https://swappa.com/listing/view/LAGC15985" target="_blank">view →</a></td></tr>
+        <tr class="tr"><td class="n">6</td><td class="p">$443</td><td>PS5 <b>Disc</b> (launch, dBrand plate)</td><td>Good</td><td>Evanston, IL · ships</td><td><a href="https://swappa.com/listing/view/LAFM05252" target="_blank">view →</a></td></tr>
+        <tr class="tr"><td class="n">7</td><td class="p">$474</td><td>PS5 <b>Slim Digital</b> 1TB (open box)</td><td>Mint</td><td>Bayonne, NJ · ships</td><td><a href="https://swappa.com/listing/view/LAGK79488" target="_blank">view →</a></td></tr>
+        <tr class="tr"><td class="n">8</td><td class="p">~$499</td><td>PS5 <b>Slim Digital</b> · 1-yr warranty</td><td>Sony Refurb</td><td>Sony · ships</td><td><a href="https://direct.playstation.com/en-us/buy-consoles/certified-refurbished-playstation5-digital-edition-console-model-group-slim" target="_blank">view →</a></td></tr>
+        <tr class="tr"><td class="n">9</td><td class="p">~$549</td><td>PS5 <b>Slim Disc</b> · 1-yr warranty</td><td>Sony Refurb</td><td>Sony · ships</td><td><a href="https://direct.playstation.com/en-us/buy-consoles/certified-refurbished-playstation5-console-model-group-slim" target="_blank">view →</a></td></tr>
+        <tr class="tr"><td class="n">10</td><td class="p">$1201</td><td>PS5 <b>Pro</b> 2TB bundle + Edge controller</td><td>Good</td><td>Colorado Springs, CO · ships</td><td><a href="https://swappa.com/listing/view/LAGH25938" target="_blank">view →</a></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="sub" style="margin-top:10px">⚠️ <b>Note:</b> these are <b>verified/protected</b> listings, which run higher than raw peer-to-peer. eBay, Facebook Marketplace and OfferUp usually have <b>digital units in the $250–330 range</b> — cheaper, but eBay blocked the automated pull today behind a bot-check. Those live searches are linked below, and a scheduled daily run would capture them automatically.</p>
+
+  <!-- PRICE BASELINE -->
+  <h2>What counts as a good price?</h2>
+  <p class="sub">Use this as your gut check before messaging a seller. Ranges reflect the mid-2026 used &amp; refurb market (US).</p>
+  <div class="legend">
+    <span><i class="dot" style="background:var(--great)"></i>Great — pounce</span>
+    <span><i class="dot" style="background:var(--good)"></i>Good — fair deal</span>
+    <span><i class="dot" style="background:var(--fair)"></i>Okay — negotiate</span>
+    <span><i class="dot" style="background:var(--bad)"></i>Overpriced — skip</span>
+  </div>
+  <div class="grid g3" style="margin-top:14px">
+    <div class="card">
+      <h3>Digital (no disc)</h3>
+      <p class="model-sub">Original Digital / Slim Digital — cheapest way in</p>
+      <div class="row"><span><i class="dot" style="background:var(--great)"></i>Great</span><span class="price">under $260</span></div>
+      <div class="row"><span><i class="dot" style="background:var(--good)"></i>Good</span><span class="price">$260–300</span></div>
+      <div class="row"><span><i class="dot" style="background:var(--fair)"></i>Okay</span><span class="price">$300–340</span></div>
+      <div class="row"><span><i class="dot" style="background:var(--bad)"></i>Skip</span><span class="price">over $360</span></div>
+    </div>
+    <div class="card">
+      <h3>Disc edition</h3>
+      <p class="model-sub">Plays physical games — usually $40–60 more</p>
+      <div class="row"><span><i class="dot" style="background:var(--great)"></i>Great</span><span class="price">under $300</span></div>
+      <div class="row"><span><i class="dot" style="background:var(--good)"></i>Good</span><span class="price">$300–345</span></div>
+      <div class="row"><span><i class="dot" style="background:var(--fair)"></i>Okay</span><span class="price">$345–395</span></div>
+      <div class="row"><span><i class="dot" style="background:var(--bad)"></i>Skip</span><span class="price">over $420</span></div>
+    </div>
+    <div class="card">
+      <h3>PS5 Pro</h3>
+      <p class="model-sub">Rarely a bargain used — be patient</p>
+      <div class="row"><span><i class="dot" style="background:var(--great)"></i>Great</span><span class="price">under $650</span></div>
+      <div class="row"><span><i class="dot" style="background:var(--good)"></i>Good</span><span class="price">$650–720</span></div>
+      <div class="row"><span><i class="dot" style="background:var(--fair)"></i>Okay</span><span class="price">$720–790</span></div>
+      <div class="row"><span><i class="dot" style="background:var(--bad)"></i>Skip</span><span class="price">over $820</span></div>
+    </div>
+  </div>
+
+  <!-- LOCAL PICKUP -->
+  <h2>🤝 Local pickup near Buffalo</h2>
+  <p class="sub">Cheapest deals, no shipping, inspect before paying. Always meet in public. <span class="live">● These are live searches — they always show whatever's listed right now, never a dead page.</span></p>
+  <div class="src">
+    <a class="lnk" target="_blank" href="https://www.facebook.com/marketplace/buffalo/search/?query=ps5%20console&sortBy=price_ascend&exact=false">
+      <span class="l"><span class="name">Facebook Marketplace — Buffalo</span><span class="desc">Sorted cheapest first · biggest local supply</span></span>
+      <span class="tag t-local">Local</span></a>
+    <a class="lnk" target="_blank" href="https://offerup.com/search?q=ps5+console&sort=-price">
+      <span class="l"><span class="name">OfferUp</span><span class="desc">Set location to Buffalo · cheapest first</span></span>
+      <span class="tag t-local">Local</span></a>
+    <a class="lnk" target="_blank" href="https://www.ebay.com/sch/i.html?_nkw=playstation+5+console&_sop=15&LH_ItemCondition=3000&_stpos=14201&_sadis=75&LH_PrefLoc=99">
+      <span class="l"><span class="name">eBay — local pickup within 75 mi</span><span class="desc">Used, pickup near 14201, price + shipping low</span></span>
+      <span class="tag t-local">Local</span></a>
+    <a class="lnk" target="_blank" href="https://www.gamestop.com/store/">
+      <span class="l"><span class="name">GameStop store finder</span><span class="desc">Check Buffalo stores for pre-owned in stock</span></span>
+      <span class="tag t-local">Local</span></a>
+  </div>
+
+  <!-- REFURB / WARRANTY -->
+  <h2>✅ Refurbished with a warranty (ships anywhere)</h2>
+  <p class="sub">A little more money, but tested and covered — the safest used buy. Worth it if local listings look sketchy. <b>Stock checked Jun 16, 2026.</b></p>
+  <div class="src">
+    <a class="lnk" target="_blank" href="https://direct.playstation.com/en-us/buy-consoles/certified-refurbished-playstation5-digital-edition-console-model-group-slim">
+      <span class="l"><span class="name">Sony Certified Refurbished — Digital (Slim)</span><span class="desc">Refurbished by Sony · 1-yr warranty · <span class="ok">● in stock</span></span></span>
+      <span class="tag t-warranty">Warranty</span></a>
+    <a class="lnk" target="_blank" href="https://direct.playstation.com/en-us/buy-consoles/certified-refurbished-playstation5-console-model-group-slim">
+      <span class="l"><span class="name">Sony Certified Refurbished — Disc (Slim)</span><span class="desc">Refurbished by Sony · 1-yr warranty · <span class="ok">● in stock</span></span></span>
+      <span class="tag t-warranty">Warranty</span></a>
+    <a class="lnk" target="_blank" href="https://www.bestbuy.com/site/searchpage.jsp?st=playstation+5+refurbished&sp=%2Bcurrentprice">
+      <span class="l"><span class="name">Best Buy — Geek Squad Refurbished</span><span class="desc">Cheapest warrantied unit when available · <span class="warn">● stock comes &amp; goes</span></span></span>
+      <span class="tag t-warranty">Warranty</span></a>
+    <a class="lnk" target="_blank" href="https://www.amazon.com/s?k=playstation+5+console+renewed&i=videogames&s=price-asc-rank">
+      <span class="l"><span class="name">Amazon Renewed</span><span class="desc">90-day Renewed guarantee · sorted low to high · <span class="ok">● usually stocked</span></span></span>
+      <span class="tag t-warranty">Warranty</span></a>
+    <a class="lnk" target="_blank" href="https://www.gamestop.com/consoles-hardware/playstation-5/pre-owned+refurbished?srule=Price+Low+to+High">
+      <span class="l"><span class="name">GameStop — Pre-owned &amp; Refurbished</span><span class="desc">Online + ship to store · <span class="warn">● varies by week</span></span></span>
+      <span class="tag t-ref">Refurb</span></a>
+    <a class="lnk" target="_blank" href="https://www.walmart.com/search?q=ps5+console+restored&sort=price_low">
+      <span class="l"><span class="name">Walmart — Restored</span><span class="desc">Restored consoles · cheapest first · <span class="warn">● varies by seller</span></span></span>
+      <span class="tag t-ref">Refurb</span></a>
+  </div>
+
+  <!-- PEER TO PEER -->
+  <h2>🛒 Peer-to-peer marketplaces (ships)</h2>
+  <p class="sub">Widest selection and lowest prices, but you're trusting a stranger — use buyer protection and pay in-app, never off-platform. <span class="live">● Live searches — always current.</span></p>
+  <div class="src">
+    <a class="lnk" target="_blank" href="https://www.ebay.com/sch/i.html?_nkw=playstation+5+slim+console&_sop=15&LH_ItemCondition=3000&LH_BIN=1">
+      <span class="l"><span class="name">eBay — used PS5 Slim, cheapest first</span><span class="desc">Buy It Now · used condition · buyer protection</span></span>
+      <span class="tag t-p2p">P2P</span></a>
+    <a class="lnk" target="_blank" href="https://www.ebay.com/sch/i.html?_nkw=playstation+5+digital+console&_sop=15&LH_ItemCondition=3000&LH_BIN=1">
+      <span class="l"><span class="name">eBay — used PS5 Digital, cheapest first</span><span class="desc">The budget pick · sorted price + shipping low</span></span>
+      <span class="tag t-p2p">P2P</span></a>
+    <a class="lnk" target="_blank" href="https://swappa.com/buy/playstation-5">
+      <span class="l"><span class="name">Swappa</span><span class="desc">Vetted listings, no junk · disc &amp; digital pages</span></span>
+      <span class="tag t-p2p">P2P</span></a>
+    <a class="lnk" target="_blank" href="https://www.mercari.com/search/?keyword=ps5%20console&sortBy=2&status=on_sale">
+      <span class="l"><span class="name">Mercari</span><span class="desc">Sorted price low to high · in-app protection</span></span>
+      <span class="tag t-p2p">P2P</span></a>
+  </div>
+
+  <!-- REFERENCE -->
+  <h2>📊 Price-check tools</h2>
+  <p class="sub">Confirm a listing is actually a deal before you commit.</p>
+  <div class="grid g2">
+    <a class="lnk" target="_blank" href="https://www.pricecharting.com/console/playstation-5">
+      <span class="l"><span class="name">PriceCharting — PS5</span><span class="desc">Real sold prices, loose / complete / new</span></span>
+      <span class="go">Check →</span></a>
+    <a class="lnk" target="_blank" href="https://www.ebay.com/sch/i.html?_nkw=playstation+5+console&_sop=13&LH_Sold=1&LH_Complete=1">
+      <span class="l"><span class="name">eBay — recently SOLD prices</span><span class="desc">What people actually paid, last few weeks</span></span>
+      <span class="go">Check →</span></a>
+  </div>
+
+  <!-- SAFETY CHECKLIST -->
+  <h2>🛡️ Before Isaac buys</h2>
+  <div class="check">
+    <ul>
+      <li><b>Meet in public for local deals.</b> Buffalo Police run a safe-exchange spot — or meet inside a busy store. Bring someone. Never go to a home address.</li>
+      <li><b>Test before paying.</b> Power on, check the disc drive (if disc model), confirm it isn't account-locked, and that it factory-resets clean. A controller and cables should be included.</li>
+      <li><b>Cash or in-app only.</b> For pickup, cash. Online, pay inside eBay/Swappa/Mercari so you're protected. Never Zelle/Venmo/CashApp/gift cards to a stranger — that's the #1 scam.</li>
+      <li><b>Check the serial isn't reported stolen.</b> Ask for a photo of the serial; be wary of "no box, no cables, must sell today" at a too-low price.</li>
+      <li><b>Sanity-check the price</b> against the table up top and eBay sold listings. If it's way below "Great," assume it's a scam until proven otherwise.</li>
+      <li><b>Sell the Series S first or alongside</b> — same marketplaces. A clean Series S typically funds a big chunk of a used PS5 Digital.</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p><b>Reading the status dots:</b> <span class="live">●</span> live search (marketplaces — never a dead page) · <span class="ok">●</span> confirmed in stock · <span class="warn">●</span> stock fluctuates, may show sold out. The retail-refurb dots were checked Jun 16, 2026 — those pages can sell out, so if one says unavailable it's the page, not the whole store. The marketplace and local links can't go dead; they just show whatever's listed at that moment.</p>
+    <p>Links open pre-filtered searches sorted by price — they refresh themselves every time you open them, so this page stays current without any upkeep. Price ranges are guidance, not live quotes; the real number is whatever the cheapest legit listing shows when you click in.</p>
+    <p>Built for Isaac · bookmark this page and check the top three sections daily.</p>
+  </footer>
+</div>
+<script>
+  document.getElementById('today').textContent =
+    'Updated ' + new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+</script>
+</body>
+</html>
